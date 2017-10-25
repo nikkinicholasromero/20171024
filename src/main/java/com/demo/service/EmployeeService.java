@@ -11,8 +11,12 @@ import java.util.List;
 
 @Service
 public class EmployeeService {
-    @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    public EmployeeService(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
     public Employee findOne(String id) {
         return employeeRepository.findOne(id);
@@ -20,7 +24,12 @@ public class EmployeeService {
 
     public List<Employee> findAll() {
         List<Employee> employees = new ArrayList<>();
-        employeeRepository.findAll().forEach(employees::add);
+
+        Iterable<Employee> employeeIterable = employeeRepository.findAll();
+        if (employeeIterable != null) {
+            employeeIterable.forEach(employees::add);
+        }
+
         return employees;
     }
 
