@@ -5,6 +5,7 @@ import com.demo.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,14 +25,18 @@ public class EmployeeService {
     }
 
     public void create(Employee employee) {
+        employee.setDateCreated(LocalDateTime.now());
+        employee.setDateLastUpdated(LocalDateTime.now());
         employeeRepository.save(employee);
     }
 
     public void update(Employee employee) {
+        employee.setDateLastUpdated(LocalDateTime.now());
         employeeRepository.save(employee);
     }
 
     public void delete(Employee employee) {
+        employee.setDateLastUpdated(LocalDateTime.now());
         employeeRepository.delete(employee);
     }
 }
