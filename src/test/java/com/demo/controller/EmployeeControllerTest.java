@@ -5,6 +5,7 @@ import com.demo.service.EmployeeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,52 +45,52 @@ public class EmployeeControllerTest {
         mockMvc = standaloneSetup(employeeController).build();
         employee = new Employee();
 
-        employee.setId("01");
+        employee.setId("1");
         employee.setEmployeeId("2017-01");
         employee.setFirstName("Nikki Nicholas");
         employee.setMiddleName("Domingo");
         employee.setLastName("Romero");
         employee.setGender("Male");
         employee.setBirthDate(LocalDate.of(1991, Month.AUGUST, 5));
-        employee.setDateCreated(LocalDateTime.of(2017, Month.JANUARY, 1, 0, 0));
-        employee.setDateLastUpdated(LocalDateTime.of(2017, Month.JANUARY, 1, 0, 0));
+        employee.setDateCreated(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5));
+        employee.setDateLastUpdated(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5));
 
         employees = new ArrayList<>();
 
         Employee employee01 = new Employee();
-        employee01.setId("01");
+        employee01.setId("1");
         employee01.setEmployeeId("2017-01");
         employee01.setFirstName("Nikki Nicholas");
         employee01.setMiddleName("Domingo");
         employee01.setLastName("Romero");
         employee01.setGender("Male");
         employee01.setBirthDate(LocalDate.of(1991, Month.AUGUST, 5));
-        employee01.setDateCreated(LocalDateTime.of(2017, Month.JANUARY, 1, 0, 0));
-        employee01.setDateLastUpdated(LocalDateTime.of(2017, Month.JANUARY, 1, 0, 0));
+        employee01.setDateCreated(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5));
+        employee01.setDateLastUpdated(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5));
         employees.add(employee01);
 
         Employee employee02 = new Employee();
-        employee02.setId("02");
+        employee02.setId("2");
         employee02.setEmployeeId("2017-02");
         employee02.setFirstName("Leslie Anne");
         employee02.setMiddleName("Suarez");
         employee02.setLastName("Romero");
         employee02.setGender("Female");
         employee02.setBirthDate(LocalDate.of(1992, Month.AUGUST, 21));
-        employee02.setDateCreated(LocalDateTime.of(2017, Month.JANUARY, 1, 0, 0));
-        employee02.setDateLastUpdated(LocalDateTime.of(2017, Month.JANUARY, 1, 0, 0));
+        employee02.setDateCreated(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5));
+        employee02.setDateLastUpdated(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5));
         employees.add(employee02);
 
         Employee employee03 = new Employee();
-        employee03.setId("03");
+        employee03.setId("3");
         employee03.setEmployeeId("2017-03");
         employee03.setFirstName("Maven Claire");
         employee03.setMiddleName("Sayin");
         employee03.setLastName("Romero");
         employee03.setGender("Female");
         employee03.setBirthDate(LocalDate.of(2016, Month.NOVEMBER, 24));
-        employee03.setDateCreated(LocalDateTime.of(2017, Month.JANUARY, 1, 0, 0));
-        employee03.setDateLastUpdated(LocalDateTime.of(2017, Month.JANUARY, 1, 0, 0));
+        employee03.setDateCreated(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5));
+        employee03.setDateLastUpdated(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5));
         employees.add(employee03);
 
         mapper = new ObjectMapper();
@@ -103,7 +104,8 @@ public class EmployeeControllerTest {
         when(employeeService.findOne(id)).thenReturn(null);
 
         mockMvc.perform(get("/employee/" + id))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(content().string(StringUtils.EMPTY));
     }
 
     @Test
@@ -123,6 +125,14 @@ public class EmployeeControllerTest {
             .andExpect(jsonPath("$.birthDate", is(employee.getBirthDate().format(DateTimeFormatter.ISO_DATE))))
             .andExpect(jsonPath("$.dateCreated", is(employee.getDateCreated().format(DateTimeFormatter.ISO_DATE_TIME))))
             .andExpect(jsonPath("$.dateLastUpdated", is(employee.getDateLastUpdated().format(DateTimeFormatter.ISO_DATE_TIME))));
+    }
+
+    @Test
+    public void findAll_whenResultIsEmpty_thenReturnEmpty() throws Exception {
+        mockMvc.perform(get("/employee"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", hasSize(0)));
     }
 
     @Test
@@ -160,14 +170,6 @@ public class EmployeeControllerTest {
             .andExpect(jsonPath("$.[2].birthDate", is(employees.get(2).getBirthDate().format(DateTimeFormatter.ISO_DATE))))
             .andExpect(jsonPath("$.[2].dateCreated", is(employees.get(2).getDateCreated().format(DateTimeFormatter.ISO_DATE_TIME))))
             .andExpect(jsonPath("$.[2].dateLastUpdated", is(employees.get(2).getDateLastUpdated().format(DateTimeFormatter.ISO_DATE_TIME))));
-    }
-
-    @Test
-    public void findAll_whenResultIsEmpty_thenReturnEmpty() throws Exception {
-        mockMvc.perform(get("/employee"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$", hasSize(0)));
     }
 
     @Test
