@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.StringUtils;
 import org.flywaydb.core.Flyway;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,20 +27,18 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@SpringBootTest
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class EmployeeControllerFeatureTest {
+    @Autowired
+    private Flyway flyway;
     @Autowired
     private WebApplicationContext context;
     private MockMvc mockMvc;
     private ObjectMapper mapper;
 
-    @Autowired
-    private Flyway flyway;
-
     @Before
     public void setup() throws Exception {
-        flyway.clean();
         flyway.migrate();
 
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -49,20 +48,21 @@ public class EmployeeControllerFeatureTest {
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
+    @After
+    public void teardown() {
+        flyway.clean();
+    }
+
     @Test
     public void findOne_whenResultIsEmpty_thenReturnEmpty() throws Exception {
-        String id = "invalidId";
-
-        mockMvc.perform(get("/employee/" + id))
+        mockMvc.perform(get("/employee/invalidId"))
             .andExpect(status().isOk())
             .andExpect(content().string(StringUtils.EMPTY));
     }
 
     @Test
     public void findOne_whenResultIsNotEmpty_thenReturnEmployee() throws Exception {
-        String id = "1";
-
-        mockMvc.perform(get("/employee/" + id))
+        mockMvc.perform(get("/employee/1"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.id", is("1")))

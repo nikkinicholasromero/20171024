@@ -30,11 +30,11 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 @RunWith(MockitoJUnitRunner.class)
 public class EmployeeControllerTest {
-    private MockMvc mockMvc;
-    private EmployeeController employeeController;
-
     @Mock
     private EmployeeService employeeService;
+    private EmployeeController employeeController;
+    private MockMvc mockMvc;
+
     private Employee employee;
     private List<Employee> employees;
     private ObjectMapper mapper;
@@ -43,8 +43,8 @@ public class EmployeeControllerTest {
     public void setup() {
         employeeController = new EmployeeController(employeeService);
         mockMvc = standaloneSetup(employeeController).build();
-        employee = new Employee();
 
+        employee = new Employee();
         employee.setId("1");
         employee.setEmployeeId("2017-01");
         employee.setFirstName("Nikki Nicholas");
@@ -100,20 +100,18 @@ public class EmployeeControllerTest {
 
     @Test
     public void findOne_whenResultIsEmpty_thenReturnEmpty() throws Exception {
-        String id = "invalidId";
-        when(employeeService.findOne(id)).thenReturn(null);
+        when(employeeService.findOne("invalidId")).thenReturn(null);
 
-        mockMvc.perform(get("/employee/" + id))
+        mockMvc.perform(get("/employee/invalidId"))
             .andExpect(status().isOk())
             .andExpect(content().string(StringUtils.EMPTY));
     }
 
     @Test
     public void findOne_whenResultIsNotEmpty_thenReturnEmployee() throws Exception {
-        String id = "1";
-        when(employeeService.findOne(id)).thenReturn(employee);
+        when(employeeService.findOne("1")).thenReturn(employee);
 
-        mockMvc.perform(get("/employee/" + id))
+        mockMvc.perform(get("/employee/1"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.id", is(employee.getId())))
