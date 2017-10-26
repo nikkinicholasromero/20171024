@@ -130,9 +130,9 @@ public class EmployeeControllerTest {
     @Test
     public void findAll_whenResultIsEmpty_thenReturnEmpty() throws Exception {
         mockMvc.perform(get("/employee"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$", hasSize(0)));
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+            .andExpect(jsonPath("$", hasSize(0)));
     }
 
     @Test

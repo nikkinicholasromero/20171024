@@ -175,8 +175,6 @@ public class EmployeeControllerFeatureTest {
             .andExpect(jsonPath("$.dateLastUpdated", not(employee.getDateLastUpdated().format(DateTimeFormatter.ISO_DATE_TIME))));
     }
 
-
-
     @Test
     public void delete_whenValidEmployee() throws Exception {
         Employee employee = new Employee();
@@ -191,12 +189,12 @@ public class EmployeeControllerFeatureTest {
         employee.setDateLastUpdated(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5));
 
         mockMvc.perform(delete("/employee")
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(mapper.writeValueAsString(employee)))
-                .andExpect(status().isOk());
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .content(mapper.writeValueAsString(employee)))
+            .andExpect(status().isOk());
 
         mockMvc.perform(get("/employee/" + employee.getId()))
-                .andExpect(status().isOk())
-                .andExpect(content().string(StringUtils.EMPTY));
+            .andExpect(status().isOk())
+            .andExpect(content().string(StringUtils.EMPTY));
     }
 }
