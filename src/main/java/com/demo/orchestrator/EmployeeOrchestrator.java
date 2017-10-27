@@ -38,27 +38,24 @@ public class EmployeeOrchestrator {
     public StandardResponse<List<Employee>> findAll() {
         List<Employee> employees = employeeService.findAll();
         return new StandardResponse<List<Employee>>(Status.SUCCESS)
-                .payload(employees);
+            .payload(employees);
     }
 
     public StandardResponse create(Employee employee) {
         employeeService.create(employee);
-        StandardResponse response = new StandardResponse(Status.SUCCESS)
-                .message("Employee created");
-        return response;
+        return new StandardResponse(Status.SUCCESS)
+            .message("Employee created");
     }
 
     public StandardResponse update(Employee employee) {
         employeeService.update(employee);
-        StandardResponse response = new StandardResponse(Status.SUCCESS)
-                .message("Employee updated");
-        return response;
+        return new StandardResponse(Status.SUCCESS)
+            .message("Employee updated");
     }
 
     public StandardResponse delete(Employee employee) {
         employeeService.delete(employee);
-        StandardResponse response = new StandardResponse(Status.SUCCESS)
-                .message("Employee deleted");
-        return response;
+        return new StandardResponse(Status.SUCCESS)
+            .message("Employee deleted");
     }
 }
