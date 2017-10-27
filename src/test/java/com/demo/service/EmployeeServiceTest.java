@@ -74,6 +74,15 @@ public class EmployeeServiceTest {
     }
 
     @Test
+    public void findOne_whenResultIsEmpty_thenReturnEmpty() {
+        when(employeeRepository.findOne(anyString())).thenReturn(null);
+
+        Employee actual = employeeService.findOne(StringUtils.EMPTY);
+
+        assertThat(actual).isNull();
+    }
+
+    @Test
     public void findOne_whenValidId_thenReturnEmployee() {
         when(employeeRepository.findOne(anyString())).thenReturn(employee);
 

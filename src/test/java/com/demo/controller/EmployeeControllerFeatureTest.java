@@ -58,8 +58,9 @@ public class EmployeeControllerFeatureTest {
         mockMvc.perform(get("/employee/invalidId"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status", is(Status.FAILED.toString())))
-            .andExpect(jsonPath("$.errors.[0]", is("EMPLOYEE_DOES_NOT_EXIST")))
-            .andExpect(jsonPath("$.message", is("Employee does not exist")));
+            .andExpect(jsonPath("$.message", is("Employee does not exist")))
+            .andExpect(jsonPath("$.payload").doesNotExist())
+            .andExpect(jsonPath("$.errors.[0]", is("EMPLOYEE_DOES_NOT_EXIST")));
     }
 
     @Test
@@ -68,6 +69,7 @@ public class EmployeeControllerFeatureTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
+            .andExpect(jsonPath("$.message").doesNotExist())
             .andExpect(jsonPath("$.payload.id", is("1")))
             .andExpect(jsonPath("$.payload.employeeId", is("2017-001")))
             .andExpect(jsonPath("$.payload.firstName", is("Nikki Nicholas")))
@@ -76,7 +78,8 @@ public class EmployeeControllerFeatureTest {
             .andExpect(jsonPath("$.payload.gender", is("Male")))
             .andExpect(jsonPath("$.payload.birthDate", is(LocalDate.of(1991, Month.AUGUST, 5).format(DateTimeFormatter.ISO_DATE))))
             .andExpect(jsonPath("$.payload.dateCreated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
-            .andExpect(jsonPath("$.payload.dateLastUpdated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))));
+            .andExpect(jsonPath("$.payload.dateLastUpdated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
+            .andExpect(jsonPath("$.errors").doesNotExist());
     }
 
     @Test
@@ -85,6 +88,7 @@ public class EmployeeControllerFeatureTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
+            .andExpect(jsonPath("$.message").doesNotExist())
             .andExpect(jsonPath("$.payload.[*]", hasSize(3)))
             .andExpect(jsonPath("$.payload.[0].id", is("1")))
             .andExpect(jsonPath("$.payload.[0].employeeId", is("2017-001")))
@@ -112,7 +116,8 @@ public class EmployeeControllerFeatureTest {
             .andExpect(jsonPath("$.payload.[2].gender", is("Female")))
             .andExpect(jsonPath("$.payload.[2].birthDate", is(LocalDate.of(2016, Month.NOVEMBER, 24).format(DateTimeFormatter.ISO_DATE))))
             .andExpect(jsonPath("$.payload.[2].dateCreated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
-            .andExpect(jsonPath("$.payload.[2].dateLastUpdated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))));
+            .andExpect(jsonPath("$.payload.[2].dateLastUpdated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
+            .andExpect(jsonPath("$.errors").doesNotExist());
     }
 
     @Test
@@ -133,12 +138,15 @@ public class EmployeeControllerFeatureTest {
             .content(mapper.writeValueAsString(employee)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
-            .andExpect(jsonPath("$.message", is("Employee created")));
+            .andExpect(jsonPath("$.message", is("Employee created")))
+            .andExpect(jsonPath("$.payload").doesNotExist())
+            .andExpect(jsonPath("$.errors").doesNotExist());
 
         mockMvc.perform(get("/employee/" + employee.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
+            .andExpect(jsonPath("$.message").doesNotExist())
             .andExpect(jsonPath("$.payload.id", is(employee.getId())))
             .andExpect(jsonPath("$.payload.employeeId", is(employee.getEmployeeId())))
             .andExpect(jsonPath("$.payload.firstName", is(employee.getFirstName())))
@@ -147,7 +155,8 @@ public class EmployeeControllerFeatureTest {
             .andExpect(jsonPath("$.payload.gender", is(employee.getGender())))
             .andExpect(jsonPath("$.payload.birthDate", is(employee.getBirthDate().format(DateTimeFormatter.ISO_DATE))))
             .andExpect(jsonPath("$.payload.dateCreated", not(employee.getDateCreated().format(DateTimeFormatter.ISO_DATE_TIME))))
-            .andExpect(jsonPath("$.payload.dateLastUpdated", not(employee.getDateLastUpdated().format(DateTimeFormatter.ISO_DATE_TIME))));
+            .andExpect(jsonPath("$.payload.dateLastUpdated", not(employee.getDateLastUpdated().format(DateTimeFormatter.ISO_DATE_TIME))))
+            .andExpect(jsonPath("$.errors").doesNotExist());
     }
 
     @Test
@@ -168,12 +177,15 @@ public class EmployeeControllerFeatureTest {
             .content(mapper.writeValueAsString(employee)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
-            .andExpect(jsonPath("$.message", is("Employee updated")));
+            .andExpect(jsonPath("$.message", is("Employee updated")))
+            .andExpect(jsonPath("$.payload").doesNotExist())
+            .andExpect(jsonPath("$.errors").doesNotExist());
 
         mockMvc.perform(get("/employee/" + employee.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
             .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
+            .andExpect(jsonPath("$.message").doesNotExist())
             .andExpect(jsonPath("$.payload.id", is(employee.getId())))
             .andExpect(jsonPath("$.payload.employeeId", is(employee.getEmployeeId())))
             .andExpect(jsonPath("$.payload.firstName", is(employee.getFirstName())))
@@ -182,7 +194,8 @@ public class EmployeeControllerFeatureTest {
             .andExpect(jsonPath("$.payload.gender", is(employee.getGender())))
             .andExpect(jsonPath("$.payload.birthDate", is(employee.getBirthDate().format(DateTimeFormatter.ISO_DATE))))
             .andExpect(jsonPath("$.payload.dateCreated", is(employee.getDateCreated().format(DateTimeFormatter.ISO_DATE_TIME))))
-            .andExpect(jsonPath("$.payload.dateLastUpdated", not(employee.getDateLastUpdated().format(DateTimeFormatter.ISO_DATE_TIME))));
+            .andExpect(jsonPath("$.payload.dateLastUpdated", not(employee.getDateLastUpdated().format(DateTimeFormatter.ISO_DATE_TIME))))
+            .andExpect(jsonPath("$.errors").doesNotExist());
     }
 
     @Test
@@ -203,12 +216,15 @@ public class EmployeeControllerFeatureTest {
             .content(mapper.writeValueAsString(employee)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
-            .andExpect(jsonPath("$.message", is("Employee deleted")));
+            .andExpect(jsonPath("$.message", is("Employee deleted")))
+            .andExpect(jsonPath("$.payload").doesNotExist())
+            .andExpect(jsonPath("$.errors").doesNotExist());
 
         mockMvc.perform(get("/employee/" + employee.getId()))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status", is(Status.FAILED.toString())))
             .andExpect(jsonPath("$.errors.[0]", is("EMPLOYEE_DOES_NOT_EXIST")))
+            .andExpect(jsonPath("$.payload").doesNotExist())
             .andExpect(jsonPath("$.message", is("Employee does not exist")));
     }
 }
