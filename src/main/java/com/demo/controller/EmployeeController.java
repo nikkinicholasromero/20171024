@@ -42,10 +42,8 @@ public class EmployeeController {
 
     @GetMapping("")
     public HttpEntity<StandardResponse<List<Employee>>> findAll() {
-        StandardResponse<List<Employee>> response;
-
         List<Employee> employees = employeeService.findAll();
-        response = new StandardResponse<List<Employee>>(Status.SUCCESS)
+        StandardResponse<List<Employee>> response = new StandardResponse<List<Employee>>(Status.SUCCESS)
                 .payload(employees);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
