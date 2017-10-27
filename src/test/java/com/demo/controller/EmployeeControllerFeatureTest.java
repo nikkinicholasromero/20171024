@@ -148,14 +148,12 @@ public class EmployeeControllerFeatureTest {
             .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
             .andExpect(jsonPath("$.message").doesNotExist())
             .andExpect(jsonPath("$.payload.id", is(employee.getId())))
-            .andExpect(jsonPath("$.payload.employeeId", is(employee.getEmployeeId())))
+            .andExpect(jsonPath("$.payload.employeeId", not(employee.getEmployeeId())))
             .andExpect(jsonPath("$.payload.firstName", is(employee.getFirstName())))
             .andExpect(jsonPath("$.payload.middleName", is(employee.getMiddleName())))
             .andExpect(jsonPath("$.payload.lastName", is(employee.getLastName())))
             .andExpect(jsonPath("$.payload.gender", is(employee.getGender())))
             .andExpect(jsonPath("$.payload.birthDate", is(employee.getBirthDate().format(DateTimeFormatter.ISO_DATE))))
-            .andExpect(jsonPath("$.payload.dateCreated", not(employee.getDateCreated().format(DateTimeFormatter.ISO_DATE_TIME))))
-            .andExpect(jsonPath("$.payload.dateLastUpdated", not(employee.getDateLastUpdated().format(DateTimeFormatter.ISO_DATE_TIME))))
             .andExpect(jsonPath("$.errors").doesNotExist());
     }
 
@@ -193,8 +191,6 @@ public class EmployeeControllerFeatureTest {
             .andExpect(jsonPath("$.payload.lastName", is(employee.getLastName())))
             .andExpect(jsonPath("$.payload.gender", is(employee.getGender())))
             .andExpect(jsonPath("$.payload.birthDate", is(employee.getBirthDate().format(DateTimeFormatter.ISO_DATE))))
-            .andExpect(jsonPath("$.payload.dateCreated", is(employee.getDateCreated().format(DateTimeFormatter.ISO_DATE_TIME))))
-            .andExpect(jsonPath("$.payload.dateLastUpdated", not(employee.getDateLastUpdated().format(DateTimeFormatter.ISO_DATE_TIME))))
             .andExpect(jsonPath("$.errors").doesNotExist());
     }
 

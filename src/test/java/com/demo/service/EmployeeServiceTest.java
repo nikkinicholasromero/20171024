@@ -113,6 +113,7 @@ public class EmployeeServiceTest {
     public void create_whenValidEmployee() {
         employeeService.create(employee);
 
+        verify(employee, times(1)).setId(anyString());
         verify(employee, times(1)).setDateCreated(any(LocalDateTime.class));
         verify(employee, times(1)).setDateLastUpdated(any(LocalDateTime.class));
         verify(employeeRepository, times(1)).save(employee);

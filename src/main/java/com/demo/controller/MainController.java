@@ -13,7 +13,7 @@ public class MainController {
     @GetMapping("")
     public HttpEntity<StandardResponse<String>> index() {
         StandardResponse<String> response = new StandardResponse<String>(Status.SUCCESS)
-                .payload("The application is up and running. ");
+            .payload("The application is up and running. ");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

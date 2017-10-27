@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class EmployeeService {
@@ -34,6 +35,7 @@ public class EmployeeService {
     }
 
     public void create(Employee employee) {
+        employee.setId(UUID.randomUUID().toString());
         employee.setDateCreated(LocalDateTime.now());
         employee.setDateLastUpdated(LocalDateTime.now());
         employeeRepository.save(employee);
