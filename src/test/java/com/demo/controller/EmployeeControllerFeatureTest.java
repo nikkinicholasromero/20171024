@@ -1,10 +1,10 @@
 package com.demo.controller;
 
+import com.demo.controller.response.Status;
 import com.demo.domain.Employee;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.apache.commons.lang3.StringUtils;
 import org.flywaydb.core.Flyway;
 import org.junit.After;
 import org.junit.Before;
@@ -57,7 +57,9 @@ public class EmployeeControllerFeatureTest {
     public void findOne_whenResultIsEmpty_thenReturnEmpty() throws Exception {
         mockMvc.perform(get("/employee/invalidId"))
             .andExpect(status().isOk())
-            .andExpect(content().string(StringUtils.EMPTY));
+            .andExpect(jsonPath("$.status", is(Status.FAILED.toString())))
+            .andExpect(jsonPath("$.errors.[0]", is("EMPLOYEE_DOES_NOT_EXIST")))
+            .andExpect(jsonPath("$.message", is("Employee does not exist")));
     }
 
     @Test
@@ -65,15 +67,16 @@ public class EmployeeControllerFeatureTest {
         mockMvc.perform(get("/employee/1"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.id", is("1")))
-            .andExpect(jsonPath("$.employeeId", is("2017-001")))
-            .andExpect(jsonPath("$.firstName", is("Nikki Nicholas")))
-            .andExpect(jsonPath("$.middleName", is("Domingo")))
-            .andExpect(jsonPath("$.lastName", is("Romero")))
-            .andExpect(jsonPath("$.gender", is("Male")))
-            .andExpect(jsonPath("$.birthDate", is(LocalDate.of(1991, Month.AUGUST, 5).format(DateTimeFormatter.ISO_DATE))))
-            .andExpect(jsonPath("$.dateCreated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
-            .andExpect(jsonPath("$.dateLastUpdated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))));
+            .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
+            .andExpect(jsonPath("$.payload.id", is("1")))
+            .andExpect(jsonPath("$.payload.employeeId", is("2017-001")))
+            .andExpect(jsonPath("$.payload.firstName", is("Nikki Nicholas")))
+            .andExpect(jsonPath("$.payload.middleName", is("Domingo")))
+            .andExpect(jsonPath("$.payload.lastName", is("Romero")))
+            .andExpect(jsonPath("$.payload.gender", is("Male")))
+            .andExpect(jsonPath("$.payload.birthDate", is(LocalDate.of(1991, Month.AUGUST, 5).format(DateTimeFormatter.ISO_DATE))))
+            .andExpect(jsonPath("$.payload.dateCreated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
+            .andExpect(jsonPath("$.payload.dateLastUpdated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))));
     }
 
     @Test
@@ -81,34 +84,35 @@ public class EmployeeControllerFeatureTest {
         mockMvc.perform(get("/employee"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$", hasSize(3)))
-            .andExpect(jsonPath("$.[0].id", is("1")))
-            .andExpect(jsonPath("$.[0].employeeId", is("2017-001")))
-            .andExpect(jsonPath("$.[0].firstName", is("Nikki Nicholas")))
-            .andExpect(jsonPath("$.[0].middleName", is("Domingo")))
-            .andExpect(jsonPath("$.[0].lastName", is("Romero")))
-            .andExpect(jsonPath("$.[0].gender", is("Male")))
-            .andExpect(jsonPath("$.[0].birthDate", is(LocalDate.of(1991, Month.AUGUST, 5).format(DateTimeFormatter.ISO_DATE))))
-            .andExpect(jsonPath("$.[0].dateCreated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
-            .andExpect(jsonPath("$.[0].dateLastUpdated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
-            .andExpect(jsonPath("$.[1].id", is("2")))
-            .andExpect(jsonPath("$.[1].employeeId", is("2017-002")))
-            .andExpect(jsonPath("$.[1].firstName", is("Leslie Anne")))
-            .andExpect(jsonPath("$.[1].middleName", is("Suarez")))
-            .andExpect(jsonPath("$.[1].lastName", is("Sayin")))
-            .andExpect(jsonPath("$.[1].gender", is("Female")))
-            .andExpect(jsonPath("$.[1].birthDate", is(LocalDate.of(1992, Month.AUGUST, 21).format(DateTimeFormatter.ISO_DATE))))
-            .andExpect(jsonPath("$.[1].dateCreated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
-            .andExpect(jsonPath("$.[1].dateLastUpdated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
-            .andExpect(jsonPath("$.[2].id", is("3")))
-            .andExpect(jsonPath("$.[2].employeeId", is("2017-003")))
-            .andExpect(jsonPath("$.[2].firstName", is("Maven Claire")))
-            .andExpect(jsonPath("$.[2].middleName", is("Sayin")))
-            .andExpect(jsonPath("$.[2].lastName", is("Romero")))
-            .andExpect(jsonPath("$.[2].gender", is("Female")))
-            .andExpect(jsonPath("$.[2].birthDate", is(LocalDate.of(2016, Month.NOVEMBER, 24).format(DateTimeFormatter.ISO_DATE))))
-            .andExpect(jsonPath("$.[2].dateCreated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
-            .andExpect(jsonPath("$.[2].dateLastUpdated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))));
+            .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
+            .andExpect(jsonPath("$.payload.[*]", hasSize(3)))
+            .andExpect(jsonPath("$.payload.[0].id", is("1")))
+            .andExpect(jsonPath("$.payload.[0].employeeId", is("2017-001")))
+            .andExpect(jsonPath("$.payload.[0].firstName", is("Nikki Nicholas")))
+            .andExpect(jsonPath("$.payload.[0].middleName", is("Domingo")))
+            .andExpect(jsonPath("$.payload.[0].lastName", is("Romero")))
+            .andExpect(jsonPath("$.payload.[0].gender", is("Male")))
+            .andExpect(jsonPath("$.payload.[0].birthDate", is(LocalDate.of(1991, Month.AUGUST, 5).format(DateTimeFormatter.ISO_DATE))))
+            .andExpect(jsonPath("$.payload.[0].dateCreated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
+            .andExpect(jsonPath("$.payload.[0].dateLastUpdated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
+            .andExpect(jsonPath("$.payload.[1].id", is("2")))
+            .andExpect(jsonPath("$.payload.[1].employeeId", is("2017-002")))
+            .andExpect(jsonPath("$.payload.[1].firstName", is("Leslie Anne")))
+            .andExpect(jsonPath("$.payload.[1].middleName", is("Suarez")))
+            .andExpect(jsonPath("$.payload.[1].lastName", is("Sayin")))
+            .andExpect(jsonPath("$.payload.[1].gender", is("Female")))
+            .andExpect(jsonPath("$.payload.[1].birthDate", is(LocalDate.of(1992, Month.AUGUST, 21).format(DateTimeFormatter.ISO_DATE))))
+            .andExpect(jsonPath("$.payload.[1].dateCreated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
+            .andExpect(jsonPath("$.payload.[1].dateLastUpdated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
+            .andExpect(jsonPath("$.payload.[2].id", is("3")))
+            .andExpect(jsonPath("$.payload.[2].employeeId", is("2017-003")))
+            .andExpect(jsonPath("$.payload.[2].firstName", is("Maven Claire")))
+            .andExpect(jsonPath("$.payload.[2].middleName", is("Sayin")))
+            .andExpect(jsonPath("$.payload.[2].lastName", is("Romero")))
+            .andExpect(jsonPath("$.payload.[2].gender", is("Female")))
+            .andExpect(jsonPath("$.payload.[2].birthDate", is(LocalDate.of(2016, Month.NOVEMBER, 24).format(DateTimeFormatter.ISO_DATE))))
+            .andExpect(jsonPath("$.payload.[2].dateCreated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))))
+            .andExpect(jsonPath("$.payload.[2].dateLastUpdated", is(LocalDateTime.of(2017, Month.JANUARY, 2, 3, 4, 5).format(DateTimeFormatter.ISO_DATE_TIME))));
     }
 
     @Test
@@ -127,20 +131,23 @@ public class EmployeeControllerFeatureTest {
         mockMvc.perform(put("/employee")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .content(mapper.writeValueAsString(employee)))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
+            .andExpect(jsonPath("$.message", is("Employee created")));
 
         mockMvc.perform(get("/employee/" + employee.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.id", is(employee.getId())))
-            .andExpect(jsonPath("$.employeeId", is(employee.getEmployeeId())))
-            .andExpect(jsonPath("$.firstName", is(employee.getFirstName())))
-            .andExpect(jsonPath("$.middleName", is(employee.getMiddleName())))
-            .andExpect(jsonPath("$.lastName", is(employee.getLastName())))
-            .andExpect(jsonPath("$.gender", is(employee.getGender())))
-            .andExpect(jsonPath("$.birthDate", is(employee.getBirthDate().format(DateTimeFormatter.ISO_DATE))))
-            .andExpect(jsonPath("$.dateCreated", not(employee.getDateCreated().format(DateTimeFormatter.ISO_DATE_TIME))))
-            .andExpect(jsonPath("$.dateLastUpdated", not(employee.getDateLastUpdated().format(DateTimeFormatter.ISO_DATE_TIME))));
+            .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
+            .andExpect(jsonPath("$.payload.id", is(employee.getId())))
+            .andExpect(jsonPath("$.payload.employeeId", is(employee.getEmployeeId())))
+            .andExpect(jsonPath("$.payload.firstName", is(employee.getFirstName())))
+            .andExpect(jsonPath("$.payload.middleName", is(employee.getMiddleName())))
+            .andExpect(jsonPath("$.payload.lastName", is(employee.getLastName())))
+            .andExpect(jsonPath("$.payload.gender", is(employee.getGender())))
+            .andExpect(jsonPath("$.payload.birthDate", is(employee.getBirthDate().format(DateTimeFormatter.ISO_DATE))))
+            .andExpect(jsonPath("$.payload.dateCreated", not(employee.getDateCreated().format(DateTimeFormatter.ISO_DATE_TIME))))
+            .andExpect(jsonPath("$.payload.dateLastUpdated", not(employee.getDateLastUpdated().format(DateTimeFormatter.ISO_DATE_TIME))));
     }
 
     @Test
@@ -159,20 +166,23 @@ public class EmployeeControllerFeatureTest {
         mockMvc.perform(patch("/employee")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .content(mapper.writeValueAsString(employee)))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
+            .andExpect(jsonPath("$.message", is("Employee updated")));
 
         mockMvc.perform(get("/employee/" + employee.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-            .andExpect(jsonPath("$.id", is(employee.getId())))
-            .andExpect(jsonPath("$.employeeId", is(employee.getEmployeeId())))
-            .andExpect(jsonPath("$.firstName", is(employee.getFirstName())))
-            .andExpect(jsonPath("$.middleName", is(employee.getMiddleName())))
-            .andExpect(jsonPath("$.lastName", is(employee.getLastName())))
-            .andExpect(jsonPath("$.gender", is(employee.getGender())))
-            .andExpect(jsonPath("$.birthDate", is(employee.getBirthDate().format(DateTimeFormatter.ISO_DATE))))
-            .andExpect(jsonPath("$.dateCreated", is(employee.getDateCreated().format(DateTimeFormatter.ISO_DATE_TIME))))
-            .andExpect(jsonPath("$.dateLastUpdated", not(employee.getDateLastUpdated().format(DateTimeFormatter.ISO_DATE_TIME))));
+            .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
+            .andExpect(jsonPath("$.payload.id", is(employee.getId())))
+            .andExpect(jsonPath("$.payload.employeeId", is(employee.getEmployeeId())))
+            .andExpect(jsonPath("$.payload.firstName", is(employee.getFirstName())))
+            .andExpect(jsonPath("$.payload.middleName", is(employee.getMiddleName())))
+            .andExpect(jsonPath("$.payload.lastName", is(employee.getLastName())))
+            .andExpect(jsonPath("$.payload.gender", is(employee.getGender())))
+            .andExpect(jsonPath("$.payload.birthDate", is(employee.getBirthDate().format(DateTimeFormatter.ISO_DATE))))
+            .andExpect(jsonPath("$.payload.dateCreated", is(employee.getDateCreated().format(DateTimeFormatter.ISO_DATE_TIME))))
+            .andExpect(jsonPath("$.payload.dateLastUpdated", not(employee.getDateLastUpdated().format(DateTimeFormatter.ISO_DATE_TIME))));
     }
 
     @Test
@@ -191,10 +201,14 @@ public class EmployeeControllerFeatureTest {
         mockMvc.perform(delete("/employee")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .content(mapper.writeValueAsString(employee)))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.status", is(Status.SUCCESS.toString())))
+            .andExpect(jsonPath("$.message", is("Employee deleted")));
 
         mockMvc.perform(get("/employee/" + employee.getId()))
             .andExpect(status().isOk())
-            .andExpect(content().string(StringUtils.EMPTY));
+            .andExpect(jsonPath("$.status", is(Status.FAILED.toString())))
+            .andExpect(jsonPath("$.errors.[0]", is("EMPLOYEE_DOES_NOT_EXIST")))
+            .andExpect(jsonPath("$.message", is("Employee does not exist")));
     }
 }
